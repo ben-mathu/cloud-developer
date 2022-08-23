@@ -29,6 +29,21 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   /**************************************************************************** */
 
+  app.get("/filteredimage", (req, res) => {
+    const { image_url } = req.query
+    
+    filterImageFromURL(image_url).then((value) => {
+
+      let imageArr = []
+      imageArr.push(value);
+      deleteLocalFiles(imageArr).then((value) => {
+        res.status(200).send({"image_url": value});
+      }).catch((error) => res.status(404).send(error));
+    }).catch((error) => {
+      res.status(404).send(error);
+    });
+  });
+
   //! END @TODO1
   
   // Root Endpoint
