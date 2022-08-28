@@ -23,10 +23,10 @@ import { Models } from './controllers/model.index';
     next();
   });
 
-  app.use("/", IndexRouter);
+  app.use("/app/v1", IndexRouter);
 
   app.get("/", (req, res) => {
-    res.status(200).send({message: "please use /users or /images"});
+    res.status(200).send({message: "please use /app/v1/users or /app/v1/images"});
   });
 
   // Start the Server
