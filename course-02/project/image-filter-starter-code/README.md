@@ -53,3 +53,13 @@ Add your own domain name and have it point to the running services (try adding a
 
 ### Deployment Screenshot
 - Screenshot of deployed application can be found in `deployment_screenshots`
+
+### Environment Variables
+POSTGRES_USERNAME=udagrammathudev
+POSTGRES_PASSWORD=udagrammathudev
+POSTGRES_DATABASE_NAME=udagrammathudev
+POSTGRES_HOST=udagrammathudev.czyscbs2oboq.us-east-1.rds.amazonaws.com
+AWS_REGION=us-east-1
+AWS_PROFILE=default
+AWS_MEDIA_BUCKET=udagrammathubucket
+SECRET=helloworld
