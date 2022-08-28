@@ -23,7 +23,7 @@ import { Models } from './controllers/model.index';
     next();
   });
 
-  app.use("/app/v1", IndexRouter);
+  app.use("/app/v1/", IndexRouter);
 
   app.get("/", (req, res) => {
     res.status(200).send({message: "please use /app/v1/users or /app/v1/images"});
