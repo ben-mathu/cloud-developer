@@ -82,7 +82,7 @@ export async function generateToken(user: User) {
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  if (!req.headers && !req.headers.authorization) {
+  if (!req.headers || !req.headers.authorization) {
     return res.status(400).send({message: 'No Authrization Headers'});
   }
 

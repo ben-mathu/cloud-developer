@@ -1,10 +1,15 @@
-import { Request, Response, Router } from 'express';
+import axios from 'axios';
+import { Request, response, Response, Router } from 'express';
 import { User } from '../../users/models/User';
 import { deleteLocalFiles, requireAuth } from '../../../util/util';
 import { filterImageFromURL } from '../../../util/util';
 import { Image } from '../models/Image';
+import { getFileSignedUrl, s3Client } from '../../../aws';
+import { config } from '../../../config/config';
+import fs from 'fs';
 
 const router: Router = Router();
+const cAws = config.aws
 
 // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
 // GET /filteredimage?image_url={{URL}}
@@ -63,6 +68,9 @@ router.get('/filteredimage', requireAuth, async (req: Request, res: Response) =>
 // get all images and key
 router.get('/', requireAuth, async (req: Request, res: Response) => {
   const userId = req.query['user_id'] as string;
+  if (!userId) {
+    return res.status(400).send({message: 'user id is required'});
+  }
   
   const user = await User.findByPk(userId, {include: [Image]});
   if (!user && user.images.length < 1) {
@@ -70,7 +78,23 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
   }
 
   return res.status(200).send(user.images);
-})
+});
+
+// Download a filtered image
+router.get('/:imageName', requireAuth, async (req: Request, res: Response) => {
+  const { imageName } = req.params;
+
+  if (!imageName) {
+    return res.status(400).send({message: 'url is not configured properly'});
+  }
+  const url = getFileSignedUrl(imageName);
+  const response = await axios.get(url, {
+    responseType: 'arraybuffer'
+  });
+  
+  const buffer = Buffer.from(response.data, 'utf-8');
+  return res.status(200).send(buffer);
+});
 
 // Root Endpoint
 // Displays a simple message to the user
