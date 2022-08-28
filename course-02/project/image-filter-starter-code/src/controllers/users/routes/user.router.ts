@@ -12,7 +12,7 @@ router.post('/register', async (req: Request, res: Response) => {
     return res.status(400).send({message: 'username and Password are required'});
   }
 
-  let user = await User.findByPk(username);
+  let user = await User.findOne({ where: { username: username } });
   if (user) {
     return res.status(400).send({message: 'user already exists'});
   }
@@ -35,7 +35,7 @@ router.post('/login', async (req: Request, res: Response) => {
     return res.status(400).send({message: 'username and password required'});
   }
 
-  const user = await User.findByPk(username);
+  const user = await User.findOne({where:{username: username}});
   if (!user) {
     return res.status(400).send({message: 'user does not exist'});
   }

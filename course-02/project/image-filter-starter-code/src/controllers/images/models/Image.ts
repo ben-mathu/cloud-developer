@@ -1,4 +1,5 @@
-import { AutoIncrement, Column, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AutoIncrement, BelongsTo, Column, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { User } from "../../users/models/User";
 
 @Table
 export class Image extends Model<Image> {
@@ -8,5 +9,12 @@ export class Image extends Model<Image> {
   public id: number;
 
   @Column
-  public imageName!: string
+  public imageName!: string;
+
+  @ForeignKey(() => User)
+  @Column
+  public userId: number;
+
+  @BelongsTo(() => User)
+  public user!: User;
 }

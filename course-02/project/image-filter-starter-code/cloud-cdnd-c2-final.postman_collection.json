@@ -23,6 +23,10 @@
 						{
 							"key": "image_url",
 							"value": "https://timedotcom.files.wordpress.com/2019/03/kitten-report.jpg"
+						},
+						{
+							"key": "userId",
+							"value": "{{USER_ID}}"
 						}
 					]
 				}
@@ -57,6 +61,11 @@
 			"id": "1df3d31a-de30-494b-a3d0-f1228dd8713c",
 			"key": "HOST",
 			"value": "localhost:8082",
+			"type": "string"
+		},
+		{
+			"key": "USER_ID",
+			"value": "",
 			"type": "string"
 		}
 	]

@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express';
+import { User } from '../../users/models/User';
 import { deleteLocalFiles, requireAuth } from '../../../util/util';
 import { filterImageFromURL } from '../../../util/util';
 import { Image } from '../models/Image';
@@ -21,8 +22,15 @@ const router: Router = Router();
 
 /**************************************************************************** */
 
-router.get('/filteredimage', requireAuth, (req: Request, res: Response) => {
+router.get('/filteredimage', requireAuth, async (req: Request, res: Response) => {
   const image_url = req.query['image_url'] as string;
+  const userId = req.query['user_id'] as string;
+
+  let user = await User.findByPk(userId);
+
+  if (!user) {
+    return res.status(401).send({message: `user with id ${userId} does not exist.`});
+  }
   
   filterImageFromURL(image_url).then((value) => {
 
@@ -33,7 +41,14 @@ router.get('/filteredimage', requireAuth, (req: Request, res: Response) => {
       
       let image: Image = new Image();
       image.imageName = imageName[imageName.length-1];
+      image.userId = user.id;
       const imageResult = await image.save();
+
+      const imageList: Image[] = []
+      imageList.push(image);
+
+      user.images = imageList
+      user = await user.update(user);
       
       res.status(200).send(imageResult);
     }).catch((error) => res.status(404).send(error));
@@ -47,12 +62,14 @@ router.get('/filteredimage', requireAuth, (req: Request, res: Response) => {
 
 // get all images and key
 router.get('/', requireAuth, async (req: Request, res: Response) => {
-  const images = await Image.findAll();
-  if (!images) {
+  const userId = req.query['user_id'] as string;
+  
+  const user = await User.findByPk(userId, {include: [Image]});
+  if (!user && user.images.length < 1) {
     return res.status(400).send({message: 'No images found'});
   }
 
-  return res.status(200).send(images);
+  return res.status(200).send(user.images);
 })
 
 // Root Endpoint
