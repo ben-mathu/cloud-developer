@@ -1,0 +1,242 @@
+{
+	"info": {
+		"_postman_id": "be703c8c-4da1-4eeb-8c4d-90414412cf4d",
+		"name": "cloud-cdnd-c2-final",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register /app/v1/users/register Register User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"benatt\",\n    \"password\": \"benatt\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/users/register",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/app/v1/users/login Login User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.collectionVariables.set(\"TOKEN\", jsonData.token);",
+							"pm.collectionVariables.set(\"USER_ID\", jsonData.user.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"benatt\",\n    \"password\": \"benatt\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/users/login",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/app/v1/images/filteredImage?user_id=1&image_url= Filter Image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.collectionVariables.set(\"FILE\", jsonData.imageName);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "password",
+							"value": "{{{{TOKEN}}}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/images/filteredimage?user_id={{USER_ID}}&image_url=https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"images",
+						"filteredimage"
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "{{USER_ID}}"
+						},
+						{
+							"key": "image_url",
+							"value": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/app/v1/images/{filtered.00.jpg} Download Image",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "password",
+							"value": "{{{{TOKEN}}}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/images/{{FILE}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"images",
+						"{{FILE}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/app/v1/images get all images",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "password",
+							"value": "{{{{TOKEN}}}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/images?user_id={{USER_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"images"
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "{{USER_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://udagram-mathu-dev-dev.us-east-1.elasticbeanstalk.com/app/v1"
+		},
+		{
+			"key": "USER_ID",
+			"value": 1
+		},
+		{
+			"key": "TOKEN",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJiZW5hdHQiLCJwYXNzd29yZCI6IiQyYiQxMCRDZzBHQmpaVEJaSy5PNmhySHJWRU4uVUp0ZVlzS3JBODh1QVI5b3FHLktXeXRVNjVlS2c5QyIsImNyZWF0ZWRBdCI6IjIwMjItMDgtMjhUMTQ6MDA6NTAuMjc3WiIsInVwZGF0ZWRBdCI6IjIwMjItMDgtMjhUMTQ6MDA6NTAuMjc3WiIsImlhdCI6MTY2MTY5OTI2M30.RByr01DgweSRvxDMe72cMRiDsQinc3F2_wb-DmnKptA"
+		},
+		{
+			"key": "FILE",
+			"value": ""
+		}
+	]
+}
