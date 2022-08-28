@@ -54,7 +54,7 @@ Add your own domain name and have it point to the running services (try adding a
 ### Deployment Screenshot
 - Screenshot of deployed application can be found in `deployment_screenshots`
 
-### Environment Variables
+### Environment Variables - for testing purposes
 POSTGRES_USERNAME=udagrammathudev
 POSTGRES_PASSWORD=udagrammathudev
 POSTGRES_DATABASE_NAME=udagrammathudev
