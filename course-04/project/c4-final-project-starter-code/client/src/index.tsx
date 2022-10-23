@@ -5,6 +5,10 @@ import * as serviceWorker from './serviceWorker'
 import 'semantic-ui-css/semantic.min.css'
 import { makeAuthRouting } from './routing';
 
+if (process.env.NODE_ENV === "development") {
+  require('dotenv').config()
+}
+
 ReactDOM.render(makeAuthRouting(), document.getElementById('root'))
 
 // If you want your app to work offline and load faster, you can change

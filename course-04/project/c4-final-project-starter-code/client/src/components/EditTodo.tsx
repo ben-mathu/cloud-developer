@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Form, Button } from 'semantic-ui-react'
+import { Form, Button, Input } from 'semantic-ui-react'
 import Auth from '../auth/Auth'
 import { getUploadUrl, uploadFile } from '../api/todos-api'
 
@@ -19,7 +19,6 @@ interface EditTodoProps {
 }
 
 interface EditTodoState {
-  file: any
   uploadState: UploadState
 }
 
@@ -28,24 +27,22 @@ export class EditTodo extends React.PureComponent<
   EditTodoState
 > {
   state: EditTodoState = {
-    file: undefined,
     uploadState: UploadState.NoUpload
   }
+  file: File | undefined
 
   handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
     if (!files) return
 
-    this.setState({
-      file: files[0]
-    })
+    this.file = files[0]
   }
 
   handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault()
 
     try {
-      if (!this.state.file) {
+      if (!this.file) {
         alert('File should be selected')
         return
       }
@@ -54,7 +51,7 @@ export class EditTodo extends React.PureComponent<
       const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.todoId)
 
       this.setUploadState(UploadState.UploadingFile)
-      await uploadFile(uploadUrl, this.state.file)
+      await uploadFile(uploadUrl, this.file, this.file.type)
 
       alert('File was uploaded!')
     } catch (e) {
@@ -78,7 +75,7 @@ export class EditTodo extends React.PureComponent<
         <Form onSubmit={this.handleSubmit}>
           <Form.Field>
             <label>File</label>
-            <input
+            <Input
               type="file"
               accept="image/*"
               placeholder="Image to upload"
