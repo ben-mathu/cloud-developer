@@ -1,16 +1,17 @@
-import * as AWS from 'aws-sdk'
+import { S3 } from 'aws-sdk'
+import config from '../config/config'
 
 // TODO: Implement the fileStogare logic
 export class AttachmentUtils {
-  s3 = new AWS.S3({
-    signatureVersion: 'v4'
+  s3 = new S3({
+    signatureVersion: 'v4',
+    region: 'us-east-1'
   })
   
-  getUrl = (bucketName: string, todoId: string) => {
-    return this.s3.getSignedUrlPromise('PutObject', {
-      Bucket: bucketName,
-      Key: todoId,
-      Expires: 60 * 5
+  getUrl = (todoId: string) => {
+    return this.s3.getSignedUrlPromise('putObject', {
+      Bucket: config['bucket-name'],
+      Key: todoId
     })
   }
 }

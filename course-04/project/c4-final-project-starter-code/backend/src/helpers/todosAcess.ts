@@ -1,26 +1,44 @@
-import * as AWSXRay from 'aws-xray-sdk-core'
+import * as AWSXRay from 'aws-xray-sdk'
+// import * as AWSXRay from 'aws-xray-sdk-core'
+import * as AWS from 'aws-sdk'
 import { createLogger } from '../utils/logger'
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import config from '../config/config';
 import * as DynamoDB from 'aws-sdk/clients/dynamodb';
 
 export class TodosAccess {
-  documentClient = new DocumentClient({
-    service: new DynamoDB()
-  })
-
+  dynamoDbClient
+  
   logger = createLogger('TodosAccess')
-
+  
   constructor() {
-    AWSXRay.captureAWSClient((this.documentClient as any).service)
+    this.logger.info('Setting up Todos Access')
+    this.dynamoDbClient = this.createDynamoClient()
+
+    this.logger.info('Completed setup')
+  }
+
+  createDynamoClient = () => {
+    AWSXRay.captureAWS(AWS)
+    if (config.is_offline) {
+      this.logger.info('Creating local dynamo instance')
+      return new AWS.DynamoDB.DocumentClient({
+        region: 'localhost',
+        endpoint: 'http://localhost:8000'
+      })
+    }
+
+    return new AWS.DynamoDB.DocumentClient({
+      service: new DynamoDB({})
+    })
   }
 
   // TODO: Implement the dataLayer logic
   createTodoItem = async (tableName: string, item: TodoItem) => {
 
     this.logger.info('Create a new Todo Item')
-    await this.documentClient.put({
+    await this.dynamoDbClient.put({
       TableName: tableName,
       Item: item
     }).promise()
@@ -29,7 +47,7 @@ export class TodosAccess {
   updateTodoItem = async (tableName: string, todoId: string, item: TodoUpdate) => {
 
     this.logger.info('Update an existing Todo Item')
-    await this.documentClient.update({
+    await this.dynamoDbClient.update({
       TableName: tableName,
       Key: {
         todoId: todoId
@@ -45,7 +63,7 @@ export class TodosAccess {
 
   getAllTodos = async (tableName: string, userId: string) => {
     this.logger.info('Getting all todo items by user id')
-    const result = await this.documentClient.query({
+    const result = await this.dynamoDbClient.query({
       TableName: tableName,
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
@@ -57,7 +75,7 @@ export class TodosAccess {
   }
 
   deleteItem = async (tableName: string, todoId: string, userId: string) => {
-    await this.documentClient.delete({
+    await this.dynamoDbClient.delete({
       TableName: tableName,
       Key: {
         todoId: todoId,

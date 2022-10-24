@@ -6,6 +6,7 @@ import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 import * as uuid from 'uuid'
 import { TodoUpdate } from '../models/TodoUpdate';
 import { createLogger } from '../utils/logger';
+import config from '../config/config';
 
 // TODO: Implement businessLogic
 export class TodoService {
@@ -53,40 +54,37 @@ export class TodoService {
     }
   }
 
-  getSignedUrl = (bucketName: string, todoId: string) => {
+  getSignedUrl = async (todoId: string) => {
     const attachmentUtil = new AttachmentUtils()
 
-    let url = ""
-    this.logger.debug(`Todo ID: ${todoId}`)
-    attachmentUtil.getUrl(bucketName, todoId)
-      .then((value: string) => {
-        url = value
-
-        return {
-          statusCode: 201,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': true
-          },
-          body: JSON.stringify({
-            uploadUrl: url
-          })
-        }
-      }).catch((error) => {
-        this.logger.error(error)
-      })
+    this.logger.info(`Bucket name: ${config['bucket-name']}`)
+    this.logger.info(`Todo ID: ${todoId}`)
+    const url = await attachmentUtil.getUrl(todoId)
 
     this.logger.info(`Signed Put URL: ${url}`)
 
-    return {
-      statusCode: 404,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true
-      },
-      body: JSON.stringify({
-        message: 'URL is empty'
-      })
+    if (url) {
+      return {
+        statusCode: 201,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true
+        },
+        body: JSON.stringify({
+          uploadUrl: url
+        })
+      }
+    } else {
+      return {
+        statusCode: 404,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true
+        },
+        body: JSON.stringify({
+          message: 'URL is empty'
+        })
+      }
     }
   }
 
