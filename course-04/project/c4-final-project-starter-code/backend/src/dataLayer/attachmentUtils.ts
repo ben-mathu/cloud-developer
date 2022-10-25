@@ -1,16 +1,17 @@
 import * as AWSXRay from 'aws-xray-sdk'
-import { S3 } from 'aws-sdk'
+import * as AWS from 'aws-sdk'
 import config from '../config/config'
 
 // TODO: Implement the fileStogare logic
 export class AttachmentUtils {
+  XAWS
   s3
   constructor() {
-    this.s3 = new S3({
+    this.XAWS = AWSXRay.captureAWS(AWS)
+    this.s3 = new this.XAWS.S3({
       signatureVersion: 'v4',
       region: 'us-east-1'
     })
-    AWSXRay.captureAWS((this.s3 as any).service)
   }
   
   getUrl = (todoId: string) => {

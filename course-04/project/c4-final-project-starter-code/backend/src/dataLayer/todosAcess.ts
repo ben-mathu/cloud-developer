@@ -5,34 +5,28 @@ import { createLogger } from '../utils/logger'
 import { TodoItem } from './models/TodoItem'
 import { TodoUpdate } from './models/TodoUpdate';
 import config from '../config/config';
-import * as DynamoDB from 'aws-sdk/clients/dynamodb';
 
 export class TodosAccess {
-  dynamoDbClient
-  
   logger = createLogger('TodosAccess')
-  
+  dynamoDbClient
+  XAWS
+
   constructor() {
     this.logger.info('Setting up Todos Access')
+    this.XAWS = AWSXRay.captureAWS(AWS)
     this.dynamoDbClient = this.createDynamoClient()
-
-    AWSXRay.captureAWSClient((this.dynamoDbClient as any).service)
-
-    this.logger.info('Completed setup')
   }
 
-  createDynamoClient = () => {
+  createDynamoClient() {
     if (config.is_offline) {
       this.logger.info('Creating local dynamo instance')
-      return new AWS.DynamoDB.DocumentClient({
+      return new this.XAWS.DynamoDB.DocumentClient({
         region: 'localhost',
         endpoint: 'http://localhost:8000'
       })
     }
 
-    return new AWS.DynamoDB.DocumentClient({
-      service: new DynamoDB({})
-    })
+    return new this.XAWS.DynamoDB.DocumentClient()
   }
 
   updateTodoItemAttachmentUrl = async (todoId: string, userId: string) => {
