@@ -6,7 +6,7 @@ import { cors, httpErrorHandler } from 'middy/middlewares'
 
 import { getUserId } from '../utils'
 import config from '../../config/config'
-import { TodoService } from '../../helpers/todos'
+import { TodoService } from '../../businessLogic/todos'
 
 const tableName = config['todoTable']
 
@@ -14,23 +14,8 @@ export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const todoId = event.pathParameters.todoId
     // TODO: Remove a TODO item by id
-    // await docClient.delete({
-    //   TableName: tableName,
-    //   Key: {
-    //     todoId: todoId,
-    //     userId: getUserId(event)
-    //   }
-    // }).promise()
-    
-    // return {
-    //   statusCode: 201,
-    //   headers: {
-    //     'Access-Control-Allow-Origin': '*',
-    //     'Access-Control-Allow-Credentials': true
-    //   },
-    //   body: ""
-    // }
-    return new TodoService().deleteTodoItem(tableName, todoId, getUserId(event))
+    const todoService = new TodoService()
+    return await todoService.deleteTodoItem(tableName, todoId, getUserId(event))
   }
 )
 

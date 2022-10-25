@@ -1,12 +1,12 @@
-import { TodosAccess } from './todosAcess'
-import { AttachmentUtils } from './attachmentUtils';
-import { TodoItem } from '../models/TodoItem'
+import { TodosAccess } from '../dataLayer/todosAcess'
+import { AttachmentUtils } from '../dataLayer/attachmentUtils';
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 import * as uuid from 'uuid'
-import { TodoUpdate } from '../models/TodoUpdate';
 import { createLogger } from '../utils/logger';
 import config from '../config/config';
+import { TodoItem } from '../dataLayer/models/TodoItem';
+import { TodoUpdate } from '../dataLayer/models/TodoUpdate';
 
 // TODO: Implement businessLogic
 export class TodoService {

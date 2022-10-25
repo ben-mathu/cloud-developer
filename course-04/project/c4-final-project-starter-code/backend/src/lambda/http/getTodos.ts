@@ -7,7 +7,7 @@ import { cors } from 'middy/middlewares'
 
 import config from '../../config/config'
 import { getUserId } from '../utils'
-import { TodoService } from '../../helpers/todos'
+import { TodoService } from '../../businessLogic/todos'
 
 const tableName = config['todoTable']
 
@@ -18,7 +18,8 @@ if (config.is_offline) {
 // TODO: Get all TODO items for a current user
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    return new TodoService().getAllTodos(tableName, getUserId(event))
+    const todoService = new TodoService()
+    return await todoService.getAllTodos(tableName, getUserId(event))
   }
 )
 

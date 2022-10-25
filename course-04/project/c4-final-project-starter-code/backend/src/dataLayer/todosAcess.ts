@@ -2,8 +2,8 @@ import * as AWSXRay from 'aws-xray-sdk'
 // import * as AWSXRay from 'aws-xray-sdk-core'
 import * as AWS from 'aws-sdk'
 import { createLogger } from '../utils/logger'
-import { TodoItem } from '../models/TodoItem'
-import { TodoUpdate } from '../models/TodoUpdate';
+import { TodoItem } from './models/TodoItem'
+import { TodoUpdate } from './models/TodoUpdate';
 import config from '../config/config';
 import * as DynamoDB from 'aws-sdk/clients/dynamodb';
 
@@ -16,11 +16,12 @@ export class TodosAccess {
     this.logger.info('Setting up Todos Access')
     this.dynamoDbClient = this.createDynamoClient()
 
+    AWSXRay.captureAWSClient((this.dynamoDbClient as any).service)
+
     this.logger.info('Completed setup')
   }
 
   createDynamoClient = () => {
-    AWSXRay.captureAWS(AWS)
     if (config.is_offline) {
       this.logger.info('Creating local dynamo instance')
       return new AWS.DynamoDB.DocumentClient({

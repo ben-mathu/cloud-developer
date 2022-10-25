@@ -6,7 +6,7 @@ import { cors, httpErrorHandler } from 'middy/middlewares'
 
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
 import config from '../../config/config'
-import { TodoService } from '../../helpers/todos'
+import { TodoService } from '../../businessLogic/todos'
 import { getUserId } from '../utils'
 
 const tableName = config['todoTable']
@@ -16,7 +16,8 @@ export const handler = middy(
     const todoId = event.pathParameters.todoId
     const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
     // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
-    return new TodoService().updateTodo(tableName, todoId, updatedTodo, getUserId(event))
+    const todoService = new TodoService()
+    return await todoService.updateTodo(tableName, todoId, updatedTodo, getUserId(event))
   }
 )
 
