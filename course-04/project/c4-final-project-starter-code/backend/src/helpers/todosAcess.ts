@@ -34,6 +34,23 @@ export class TodosAccess {
     })
   }
 
+  updateTodoItemAttachmentUrl = async (todoId: string, userId: string) => {
+    const urlFormat = `https://${config['bucket-name']}.s3.amazonaws.com/${todoId}`
+    this.logger.info(`Todo ID: ${todoId}`)
+    this.logger.info(`URL to save ${urlFormat}`)
+    await this.dynamoDbClient.update({
+      TableName: config['todoTable'],
+      Key: {
+        todoId: todoId,
+        userId: userId
+      },
+      UpdateExpression: 'set attachmentUrl =:a',
+      ExpressionAttributeValues: {
+        ':a': urlFormat
+      }
+    }).promise()
+  }
+
   // TODO: Implement the dataLayer logic
   createTodoItem = async (tableName: string, item: TodoItem) => {
 
@@ -44,15 +61,19 @@ export class TodosAccess {
     }).promise()
   }
 
-  updateTodoItem = async (tableName: string, todoId: string, item: TodoUpdate) => {
+  updateTodoItem = async (tableName: string, todoId: string, item: TodoUpdate, userId: string) => {
 
     this.logger.info('Update an existing Todo Item')
     await this.dynamoDbClient.update({
       TableName: tableName,
       Key: {
-        todoId: todoId
+        todoId: todoId,
+        userId: userId
       },
-      UpdateExpression: 'set name = :n, dueDate = :d, done = :done',
+      UpdateExpression: 'set #todoName = :n, dueDate = :d, done = :done',
+      ExpressionAttributeNames: {
+        '#todoName': 'name'
+      },
       ExpressionAttributeValues: {
         ':n': item.name,
         ':d': item.dueDate,

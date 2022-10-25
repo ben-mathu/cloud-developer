@@ -31,6 +31,7 @@ provider:
     REACT_APP_AUTH0_DOMAIN: https://benatt.eu.auth0.com/.well-known/jwks.json
     REACT_APP_AUTH0_CLIENT_ID: YftlaQVKzbz1GMGUwvm3tXklEvD17CD9
     CALLBACK_URL: http://localhost:3000/callback
+    _X_AMZN_TRACE_ID: 0
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
     DISABLE_XRAY_TRACING: 1 # for local/serverless offline
 
@@ -206,6 +207,11 @@ functions:
           - xray:PutTelemetryRecords
         Resource:
           - '*'
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:507025453578:table/${self:provider.environment.TODOS_TABLE}
 
 resources:
   Resources:

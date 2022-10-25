@@ -54,7 +54,7 @@ export class TodoService {
     }
   }
 
-  getSignedUrl = async (todoId: string) => {
+  getSignedUrl = async (todoId: string, userId: string) => {
     const attachmentUtil = new AttachmentUtils()
 
     this.logger.info(`Bucket name: ${config['bucket-name']}`)
@@ -64,6 +64,10 @@ export class TodoService {
     this.logger.info(`Signed Put URL: ${url}`)
 
     if (url) {
+      // add url to todo item
+      await this.todoAccess.updateTodoItemAttachmentUrl(todoId, userId)
+      this.logger.info('Added attachment url')
+      
       return {
         statusCode: 201,
         headers: {
@@ -103,14 +107,14 @@ export class TodoService {
     }
   }
 
-  updateTodo = async (tableName: string, todoId: string, updatedTodo: UpdateTodoRequest) => {
+  updateTodo = async (tableName: string, todoId: string, updatedTodo: UpdateTodoRequest, userId: string) => {
     const item: TodoUpdate = {
       done: updatedTodo.done,
       name: updatedTodo.name,
       dueDate: updatedTodo.dueDate
     }
 
-    await this.todoAccess.updateTodoItem(tableName, todoId, item)
+    await this.todoAccess.updateTodoItem(tableName, todoId, item, userId)
 
     return {
       statusCode: 201,
